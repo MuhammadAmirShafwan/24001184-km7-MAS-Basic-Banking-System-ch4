@@ -6,18 +6,6 @@ const app = express();
 const prisma = new PrismaClient();
 app.use(bodyParser.json());
 
-// create user and profile
-// {
-//     "name": "Muhammad Amir Shafwan",
-//     "email": "muhammad.amir@mail.com",
-//     "password": "password123",
-//     "profile": {
-//         "identityType": "KTP",
-//         "identityNumber": "512545156753157",
-//         "address": "Jln. Nasi Padang No. 1"
-//     }
-// }
-
 app.post('/api/v1/users', async (req, res) => {
     const { name, email, password, profile } = req.body;
     const user = await prisma.user.create({
@@ -31,23 +19,28 @@ app.post('/api/v1/users', async (req, res) => {
     res.json(user);
 });
 
-// get all users
 app.get('/api/v1/users', async (req, res) => {
     const users = await prisma.user.findMany();
-    res.json(users);
+    res.json({
+        status: 200,
+        message: 'Get all users successfully',
+        data: users
+    });
 });
 
-// get user by id and include profile
 app.get('/api/v1/users/:userId', async (req, res) => {
     const { userId } = req.params;
     const user = await prisma.user.findUnique({
         where: { id: parseInt(userId) },
         include: { profile: true }
     });
-    res.json(user);
+    res.json({
+        status: 200,
+        message: 'Get user successfully',
+        data: user
+    });
 });
 
-// update user
 app.put('/api/v1/users/:userId', async (req, res) => {
     const { userId } = req.params;
     const { name, email, password } = req.body;
@@ -58,7 +51,6 @@ app.put('/api/v1/users/:userId', async (req, res) => {
     res.json(user);
 })
 
-// update profile
 app.put('/api/v1/users/:userId/profile', async (req, res) => {
     const { userId } = req.params;
     const { identityType, identityNumber, address } = req.body;
@@ -69,13 +61,45 @@ app.put('/api/v1/users/:userId/profile', async (req, res) => {
     res.json(profile);
 })
 
-// create account
-// {
-//     "userId": 1, 
-//     "bankName": "Bank ABC",
-//     "bankAccountNumber": "1234567890",
-//     "balance": 1000000.00
-// }
+app.delete('/api/v1/users/:userId', async (req, res) => {
+    try {
+        const foundUser = await prisma.user.findUnique({
+            where: { id: parseInt(req.params.userId) }
+        });
+
+        if (!foundUser) {
+            return res.status(404).json({ error: "User tidak ada" });
+        }
+
+        await prisma.user.delete({
+            where: { id: parseInt(req.params.userId) }
+        });
+
+        res.json({ message: "User berhasil di hapus " });
+    } catch (error) {
+        res.status(500).json({ error: "Operasi gagal" });
+    }
+});
+
+app.delete('/api/v1/profiles/:profileId', async (req, res) => {
+    try {
+        const foundProfile = await prisma.profile.findUnique({
+            where: { id: parseInt(req.params.profileId) }
+        });
+
+        if (!foundProfile) {
+            return res.status(404).json({ error: "Profil tidak ada" });
+        }
+
+        await prisma.profile.delete({
+            where: { id: parseInt(req.params.profileId) }
+        });
+
+        res.json({ message: "Profil berhasil di hapus" });
+    } catch (error) {
+        res.status(500).json({ error: "Operasi gagal" });
+    }
+});
 
 app.post('/api/v1/accounts', async (req, res) => {
     const { userId, bankName, bankAccountNumber, balance } = req.body;
@@ -87,13 +111,15 @@ app.post('/api/v1/accounts', async (req, res) => {
     res.json(account);
 });
 
-// get all accounts
 app.get('/api/v1/accounts', async (req, res) => {
     const accounts = await prisma.bankAccount.findMany();
-    res.json(accounts);
+    res.json({
+        status: 200,
+        message: 'Data berhasil ditemukan',
+        data: accounts
+    });
 });
 
-// get account by id
 app.get('/api/v1/accounts/:accountId', async (req, res) => {
     const { accountId } = req.params;
     const account = await prisma.bankAccount.findUnique({
@@ -104,10 +130,14 @@ app.get('/api/v1/accounts/:accountId', async (req, res) => {
     });
 
     if (!account) {
-        return res.status(404).json({ error: "Account not found" });
+        return res.status(404).json({ error: "Akun tidak ditemukan" });
     }
 
-    res.json(account);
+    res.json({
+        status: 200,
+        message: 'Data berhasil ditemukan',
+        data: account
+    });
 });
 
 
@@ -116,16 +146,14 @@ app.post('/api/v1/transactions/deposit', async (req, res) => {
 
     try {
 
-        // pastikan akun penerima ada
         const destinationAccount = await prisma.bankAccount.findUnique({
             where: { id: destinationAccountId }
         });
 
         if (!destinationAccount) {
-            throw new Error("Destination account not found");
+            throw new Error("Akun penerima tidak ditemukan");
         }
 
-        // tambahkan saldo ke akun penerima
         await prisma.bankAccount.update({
             where: { id: destinationAccountId },
             data: {
@@ -133,7 +161,6 @@ app.post('/api/v1/transactions/deposit', async (req, res) => {
             }
         });
 
-        // buat transaksi baru
         const transaction = await prisma.transaction.create({
             data: {
                 transactionType: "deposit",
@@ -152,21 +179,18 @@ app.post('/api/v1/transactions/withdraw', async (req, res) => {
     const { sourceAccountId, amount } = req.body;
 
     try {
-        // pastikan akun ada
         const sourceAccount = await prisma.bankAccount.findUnique({
             where: { id: sourceAccountId }
         });
 
         if (!sourceAccount) {
-            throw new Error("Source account not found");
+            throw new Error("Akun pengirim tidak ditemukan");
         }
 
-        // pastikan saldo cukup
         if (sourceAccount.balance < amount) {
-            throw new Error("Insufficient balance");
+            throw new Error("Saldo tidak mencukupi");
         }
 
-        // kurangi saldo
         await prisma.bankAccount.update({
             where: { id: sourceAccountId },
             data: {
@@ -174,7 +198,6 @@ app.post('/api/v1/transactions/withdraw', async (req, res) => {
             }
         });
 
-        // buat transaksi baru
         const transaction = await prisma.transaction.create({
             data: {
                 transactionType: "withdraw",
@@ -194,14 +217,11 @@ app.post('/api/v1/transactions/transfer', async (req, res) => {
 
     try {
 
-        // Pastikan akun pengirim dan penerima berbeda
         if (sourceAccountId === destinationAccountId) {
-            throw new Error("Source and destination account cannot be the same");
+            throw new Error("Transfer ke akun sendiri tidak diperbolehkan");
         }
 
-        // Memulai transaksi di Prisma
         const transaction = await prisma.$transaction(async (prisma) => {
-            // Ambil data akun pengirim dan penerima
             const sourceAccount = await prisma.bankAccount.findUnique({
                 where: { id: sourceAccountId }
             });
@@ -210,17 +230,14 @@ app.post('/api/v1/transactions/transfer', async (req, res) => {
                 where: { id: destinationAccountId }
             });
 
-            // Pastikan akun pengirim dan penerima ada
             if (!sourceAccount || !destinationAccount) {
-                throw new Error("Source or destination account not found");
+                throw new Error("Akun tidak ditemukan");
             }
 
-            // Pastikan saldo akun pengirim cukup
             if (sourceAccount.balance < amount) {
                 throw new Error("Insufficient balance");
             }
 
-            // Kurangi saldo dari akun pengirim
             await prisma.bankAccount.update({
                 where: { id: sourceAccountId },
                 data: {
@@ -228,7 +245,6 @@ app.post('/api/v1/transactions/transfer', async (req, res) => {
                 }
             });
 
-            // Tambahkan saldo ke akun penerima
             await prisma.bankAccount.update({
                 where: { id: destinationAccountId },
                 data: {
@@ -236,7 +252,6 @@ app.post('/api/v1/transactions/transfer', async (req, res) => {
                 }
             });
 
-            // Buat transaksi baru
             return await prisma.transaction.create({
                 data: {
                     transactionType: "transfer",
@@ -253,13 +268,15 @@ app.post('/api/v1/transactions/transfer', async (req, res) => {
 });
 
 
-// get all transactions
 app.get('/api/v1/transactions', async (req, res) => {
     const transactions = await prisma.transaction.findMany();
-    res.json(transactions);
+    res.json({
+        status: 200,
+        message: 'Data berhasil ditemukan',
+        data: transactions
+    });
 });
 
-// get transaction by id
 app.get('/api/v1/transactions/:transactionId', async (req, res) => {
     const { transactionId } = req.params;
     const transaction = await prisma.transaction.findUnique({
@@ -271,58 +288,14 @@ app.get('/api/v1/transactions/:transactionId', async (req, res) => {
     });
 
     if (!transaction) {
-        return res.status(404).json({ error: "Transaction not found" });
+        return res.status(404).json({ error: "Transaksi tidak ditemukan" });
     }
 
-    res.json(transaction);
-});
-
-// delete user
-app.delete('/api/v1/users/:userId', async (req, res) => {
-    try {
-        // Pastikan user ada
-        const foundUser = await prisma.user.findUnique({
-            where: { id: parseInt(req.params.userId) }
-        });
-
-        if (!foundUser) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        // Hapus pengguna
-        await prisma.user.delete({
-            where: { id: parseInt(req.params.userId) }
-        });
-
-        // Kirimkan respons sukses
-        res.json({ message: "User successfully deleted" });
-    } catch (error) {
-        res.status(500).json({ error: "An error occurred while deleting the user" });
-    }
-});
-
-// delete profile
-app.delete('/api/v1/profiles/:profileId', async (req, res) => {
-    try {
-        // Pastikan profile ada
-        const foundProfile = await prisma.profile.findUnique({
-            where: { id: parseInt(req.params.profileId) }
-        });
-
-        if (!foundProfile) {
-            return res.status(404).json({ error: "Profile not found" });
-        }
-
-        // Hapus profile
-        await prisma.profile.delete({
-            where: { id: parseInt(req.params.profileId) }
-        });
-
-        // Kirimkan respons sukses
-        res.json({ message: "Profile successfully deleted" });
-    } catch (error) {
-        res.status(500).json({ error: "An error occurred while deleting the profile" });
-    }
+    res.json({
+        status: 200,
+        message: 'Data berhasil ditemukan',
+        data: transaction
+    });
 });
 
 app.listen(3000, () => {
