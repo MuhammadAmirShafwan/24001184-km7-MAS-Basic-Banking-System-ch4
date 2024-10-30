@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "test": "jest --runInBand",
+    "start": "nodemon --exec \"node swagger.js && node app.js\" --watch app.js --watch ./controllers/*.js --watch ./routes/*.js --ext js"
   },
   "keywords": [],
   "author": "",
@@ -12,9 +12,27 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^5.21.0",
+    "@types/jest": "^29.5.14",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
     "express": "^4.21.1",
-    "nodemon": "^3.1.7"
+    "express-flash": "^0.0.2",
+    "express-session": "^1.18.1",
+    "jest": "^29.7.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.7",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "supertest": "^7.0.0",
+    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "prisma": "^5.21.0"
