@@ -1,0 +1,6 @@
+{
+    "watch": ["app.js", "swagger.js"], 
+    "exec": "node swagger.js && node app.js", 
+    "ext": "js,json" 
+}
+  

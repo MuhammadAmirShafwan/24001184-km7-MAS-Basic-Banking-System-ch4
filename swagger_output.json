@@ -1,0 +1,629 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "My API",
+    "description": "Deskripsi API",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "Account"
+    },
+    {
+      "name": "Transaction"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/auth/register": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Endpoint untuk halaman register",
+        "description": "endpoint untuk halaman register",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Endpoint untuk register user",
+        "description": "endpoint untuk register user",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Register information",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Register"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Endpoint untuk halaman login",
+        "description": "endpoint untuk halaman login",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Endpoint untuk login",
+        "description": "endpoint untuk login",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "User information",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Login"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/authenticated": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Endpoint untuk halaman authenticated",
+        "description": "endpoint untuk halaman authenticated",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/users/": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Endpoint untuk membuat user",
+        "description": "endpoint untuk membuat user",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "User information.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddUser"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Endpoint untuk mendapatkan user",
+        "description": "Endpoint untuk mendapatkan semua user",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/users/{userId}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Endpoint untuk mendapatkan user",
+        "description": "endpoint untuk mendapatkan user berdasarkan id",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Endpoint untuk update user",
+        "description": "Endpoint untuk update user berdasarkan ID",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Informasi pengguna yang akan diperbarui.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Endpoint untuk menghapus user",
+        "description": "Endpoint untuk menghapus user berdasarkan ID",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/users/{userId}/profile": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Endpoint untuk update profile",
+        "description": "Endpoint untuk update profile berdasarkan User ID",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Informasi profile pengguna yang akan diperbarui.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Endpoint untuk menghapus profile",
+        "description": "Endpoint untuk menghapus profile berdasarkan ID",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Endpoint untuk membuat akun",
+        "description": "Endpoint untuk membuat akun baru",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Informasi akun yang akan ditambahkan.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Account"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Endpoint untuk mendapatkan akun",
+        "description": "Endpoint untuk mendapatkan semua akun",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/{accountId}": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Endpoint untuk mendapatkan akun",
+        "description": "Endpoint untuk mendapatkan akun berdasarkan ID",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/deposit": {
+      "post": {
+        "tags": [
+          "Transaction"
+        ],
+        "summary": "Endpoint untuk melakukan deposit",
+        "description": "Endpoint untuk melakukan deposit ke akun",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Informasi transaksi deposit.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Deposit"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/withdraw": {
+      "post": {
+        "tags": [
+          "Transaction"
+        ],
+        "summary": "Endpoint untuk melakukan withdraw",
+        "description": "Endpoint untuk melakukan withdraw dari akun",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Informasi transaksi penarikan.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Withdraw"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/transfer": {
+      "post": {
+        "tags": [
+          "Transaction"
+        ],
+        "summary": "Endpoint untuk melakukan transfer",
+        "description": "Endpoint untuk melakukan transfer antar akun",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Informasi transaksi transfer.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Transfer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/": {
+      "get": {
+        "tags": [
+          "Transaction"
+        ],
+        "summary": "Endpoint untuk mendapatkan transaksi",
+        "description": "Endpoint untuk mendapatkan semua transaksi",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transactionId}": {
+      "get": {
+        "tags": [
+          "Transaction"
+        ],
+        "summary": "Endpoint untuk mendapatkan transaksi",
+        "description": "Endpoint untuk mendapatkan transaksi berdasarkan ID",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Register": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Muhammad Amir Shafwan"
+        },
+        "email": {
+          "type": "string",
+          "example": "amirshafwan@gmail.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "amir631836"
+        }
+      }
+    },
+    "Login": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "amirshafwan@gmail.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "amir631836"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Muhammad Amir Shafwan"
+        },
+        "email": {
+          "type": "string",
+          "example": "user123@gmail.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "user123"
+        }
+      }
+    },
+    "Profile": {
+      "type": "object",
+      "properties": {
+        "identityType": {
+          "type": "string",
+          "example": "SIM"
+        },
+        "identityNumber": {
+          "type": "string",
+          "example": "872163638746"
+        },
+        "address": {
+          "type": "string",
+          "example": "JL. Kebon Jeruk, Jakarta"
+        }
+      }
+    },
+    "AddUser": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Muhammad Amir Shafwan"
+        },
+        "email": {
+          "type": "string",
+          "example": "amirshafwan@gmail.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "amir631836"
+        },
+        "profile": {
+          "type": "object",
+          "properties": {
+            "identityType": {
+              "type": "string",
+              "example": "SIM"
+            },
+            "identityNumber": {
+              "type": "string",
+              "example": "872163638746"
+            },
+            "address": {
+              "type": "string",
+              "example": "JL. Kebon Jeruk, Jakarta"
+            }
+          }
+        }
+      }
+    },
+    "Account": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "example": "1"
+        },
+        "bankName": {
+          "type": "string",
+          "example": "Bank BNI"
+        },
+        "bankAccountNumber": {
+          "type": "string",
+          "example": "123456789"
+        },
+        "balance": {
+          "type": "string",
+          "example": "1000000"
+        }
+      }
+    },
+    "Transfer": {
+      "type": "object",
+      "properties": {
+        "sourceAccountId": {
+          "type": "string",
+          "example": "1"
+        },
+        "destinationAccountId": {
+          "type": "string",
+          "example": "2"
+        },
+        "amount": {
+          "type": "string",
+          "example": "1000000"
+        }
+      }
+    },
+    "Withdraw": {
+      "type": "object",
+      "properties": {
+        "sourceAccountId": {
+          "type": "string",
+          "example": "1"
+        },
+        "amount": {
+          "type": "string",
+          "example": "1000000"
+        }
+      }
+    },
+    "Deposit": {
+      "type": "object",
+      "properties": {
+        "destinationAccountId": {
+          "type": "string",
+          "example": "1"
+        },
+        "amount": {
+          "type": "string",
+          "example": "1000000"
+        }
+      }
+    }
+  }
+}
